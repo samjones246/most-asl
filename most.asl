@@ -5,12 +5,15 @@ state("MoST_Win")
 
     // Player's current movement direction. Used for detecting first input
     int moveDir : 0x0095A784, 0x28, 0x10, 0x10, 0x14, 0x40, 0x24, 0x2C;
+
+    // Set to 1 when the player enters the final doorway
+    byte hasEntered_8 : 0x00959104, 0x8, 0x44, 0x48, 0x28, 0x64, 0x14, 0x14;
 }
 
 reset
 {
-    // If player has moved back to level 1 from a different level, reset
-    if (old.levelid != 1 && current.levelid == 1){
+    // If player has moved back to the menu or level 1 from a different level, reset
+    if (current.levelid == 0 || (old.levelid != 1 && current.levelid == 1)){
         return true;
     }
     //TODO: Reset if player presses 1 while already on level 1
@@ -30,9 +33,9 @@ split
         if (current.levelid == old.levelid + 1){
             return true;
         }
-    // On the final level, split on levelID going back to 0 (menu)
+    // On the final level, split on entering the door
     }else{
-        if (current.levelid == 0){
+        if (current.hasEntered_8 == 1){
             return true;
         }
     }
